@@ -1,77 +1,94 @@
-
 const express = require('express');
-const app = express()
-const path = require("path")
+const path = require('path');
 const subscriberModel = require('./models/subscribers');
-const staticPath = path.join(__dirname,"../public")
+const { serve, setup } = require('./swagger'); // Import Swagger module
 
-app.use("/docs",express.static(staticPath))
+const app = express();
 
-app.get("/", (req,res)=>{
-    res.json("Hello, This project is made by Ankit");
+// Serve the public directory
+const publicPath = path.join(__dirname, '..', 'public'); // Assuming public is in the root
+app.use(express.static(publicPath));
+
+// Use Swagger for API documentation
+app.use('/docs', serve, setup);
+
+// Define your other routes here
+app.get('/', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-// sending GET request to get subscribers list 
-app.get("/subscribers", async(req, res)=>{
-    try{
-// get all the subscribers from the database and exclude the __v field
-        const subscribers= await subscriberModel.find().select("-__v");
-// returns response with list of subscribers & status 200 (OK)        
-        res.status(200).json(subscribers);
-    }catch(err){
-// if error occurs, returns status 400 with error message
-        res.status(400).json({
-            error : "Database Error"
-        });
-    }
-});
-
-
-// sending GET request at the path "/subscribers/name"
-app.get("/subscribers/name", async (req, res)=>{
-
-// To retrieve a list of subscribers    
-    try{   
-        const subscribers= await subscriberModel.find().select("-__v -_id -subscribedDate")
-
-// returns response with list of subscribers & status 200 (OK)
-        res.status(200).json(subscribers);
-    }catch(err){
-
-// if error occurs, returns status 400 with error message
-        res.status(400).json({
-            error : "Invalid name Url"
-        });
-    }
-});
-
-//sending GET request to fetch data as per id
-app.get("/subscribers/:id", async (req, res) => {
-  try{
-    let id =req.params.id;
-    let subscribers= await subscriberModel.findById(id).select("-__v");
+/**
+ * @swagger
+ * /subscribers:
+ *   get:
+ *     description: Get a list of subscribers
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       400:
+ *         description: Bad request
+ */
+app.get('/subscribers', async (req, res) => {
+  try {
+    const subscribers = await subscriberModel.find().select('-__v');
     res.status(200).json(subscribers);
-  }catch(err){
-    res.status(400).json({message: "Invalid Id"});
+  } catch (err) {
+    res.status(400).json({ error: 'Database Error' });
   }
-})
+});
 
+/**
+ * @swagger
+ * /subscribers/names:
+ *   get:
+ *     description: Get a list of subscribers with names and subscribed channels
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       400:
+ *         description: Bad request
+ */
+app.get('/subscribers/names', async (req, res) => {
+  try {
+    const subscribers = await subscriberModel.find().select('-__v -_id -subscribedDate');
+    res.status(200).json(subscribers);
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid name Url' });
+  }
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**
+ * @swagger
+ * /subscribers/{id}:
+ *   get:
+ *     description: Get a subscriber by ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID of the subscriber
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Invalid ID
+ */
+app.get('/subscribers/:id', async (req, res) => {
+  try {
+    let id = req.params.id;
+    let subscriber = await subscriberModel.findById(id).select('-__v');
+    if (!subscriber) {
+      res.status(400).json({ message: 'Invalid ID' });
+      return;
+    }
+    res.status(200).json(subscriber);
+  } catch (err) {
+    res.status(400).json({ message: 'Invalid ID' });
+  }
+});
 
 module.exports = app;

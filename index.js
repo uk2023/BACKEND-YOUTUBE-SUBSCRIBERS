@@ -8,7 +8,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }));
 
 // Connect to DATABASE
-const DATABASE_URL = "mongodb+srv://testforcode:4O1FvTMDv6xbc1DU@cluster0.uxepwdo.mongodb.net/youtube?retryWrites=true&w=majority";
+const DATABASE_URL = "mongodb+srv://user:password%40123@cluster0.ttgsxst.mongodb.net/subscribers";
 mongoose.connect(DATABASE_URL,{ useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection
 db.on('error', (err) => console.log(err))
