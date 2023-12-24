@@ -5,6 +5,9 @@ Youtube subscribers backend Api to get the subscribers using specific routes end
   <p> This capstone project is associated with <a href="https://www.almabetter.com">Almabetter</a>.</p>
   <p> Submitted By: UJJWAL KUMAR </p>
 
+## **Deployment**
+https://backend-yt-subs.onrender.com/
+
 <!-- TABLE OF CONTENTS -->
 <details>
     <summary>Content</summary>
@@ -57,9 +60,6 @@ git clone https://github.com/uk2023/BACKEND-YOUTUBE-SUBSCRIBERS.git
 ```
 
 - Open any browser and type in address bar> localhost:3000/docs
-
-## **Deployment**
-https://youtube-subscribers-backend-amber.vercel.app/
 
 ## **DISCLAIMER**
 <p> I don't own any of the logos or images used in the project all belongs to their respected owners. </p>
